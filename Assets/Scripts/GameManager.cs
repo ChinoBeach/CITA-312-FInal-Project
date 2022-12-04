@@ -12,6 +12,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Material material_blue;        //the material for any piece on the blue team
     [SerializeField] private Material material_green;       //the material for any piece on the green team
 
+    [SerializeField] private GameObject object_d20;             //the dice;
+    [SerializeField] private Material material_blueDice;        //the material for d20 on the blue team
+    [SerializeField] private Material material_greenDice;       //the material for d20 on the green team
+
     // Every tile in the board.
     public GameObject[] array_boardTiles = new GameObject[64];
 
@@ -43,10 +47,14 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //figure out who is going first
-        //bol_isBlueTurn = DetermineFirstTeam();    //if this is true, blue goes first, otherwise green will
+        bol_isBlueTurn = DetermineFirstTeam();    //if this is true, blue goes first, otherwise green will
+        
+        
         //debug statement
-
-
+        if (bol_isBlueTurn)
+        { Debug.Log("Blue team starting"); }
+        else { Debug.Log("Green team starting"); }
+        
     }//end start
 
     // Update is called once per frame
@@ -56,40 +64,69 @@ public class GameManager : MonoBehaviour
         PlacePieces();
     }//end update
 
-    //DetermineFirstTeam is called from start to determine which team is going to go first. 
-    //bool DetermineFirstTeam()
-    //{
+    //DetermineFirstTeam is called from start to determine which team is going to go first. (default blue team goes first. 
+    //if returns true then the blue team goes first, else green team goes first
+    bool DetermineFirstTeam()
+    {
         //variables 
         int int_blueTeamInitative;      ///d20 roll
         int int_greenTeamInitative;     //d20 roll
 
         int int_randomPicker_1_2;       //which number the random number picks
         int int_blueTeam = 1;           //incase of a tie, random number 1, blue goes first 
-        int int_greenTeam = 2;          //incase of a tie random number 2, green  goes first 
+        //int int_greenTeam = 2;          //incase of a tie random number 2, green  goes first 
                                         //determine who is going first
 
-        //roll a d20 for the blue team
-        //assign that to initative
+        bool bol_blue = true;           //is blue team
+        bool bol_green = false;         //is green team
+
+
+        //roll a d20 for the blue team and assign that to initative
+        int_blueTeamInitative = Random.Range(1, 20);
+        RollDice(int_blueTeamInitative, material_blueDice);
 
         //do the same for green team
+        int_greenTeamInitative = Random.Range(1, 20);
+        RollDice(int_greenTeamInitative, material_greenDice);
 
         //if tie, pick a random team to go first 
-        //pick a number between 1 and 2
+        if (int_blueTeamInitative == int_greenTeamInitative)
+        {
+            //pick a number between 1 and 2
+            int_randomPicker_1_2 = Random.Range(1, 2);
+            //debuging
+            Debug.Log("There was a tie. Initative Blue: "+ int_blueTeamInitative +" Intative Green: " + int_greenTeamInitative);
+            Debug.Log("Random Picker: "+int_randomPicker_1_2);
+            //if blue 
+            if(int_randomPicker_1_2 == int_blueTeam)
+            {
+                //blue goes first
+                return bol_blue;
+            }//end if blue was selected
 
-        //debuging
+            //else if green (just else)
+            else 
+            {
+                //green goes first
+                return bol_green;
+            }//end else(greeen team first)
 
-        //if blue 
-        //blue goes first
-        //else if green (just else)
-        //green goes first 
-
+        }//end if for is tie
 
         //else if blue team scored higher
-        //blue goes first 
+        else if (int_blueTeamInitative>int_greenTeamInitative)
+        {
+            //blue goes first 
+            return bol_blue;
+        }//end else blue team goes first 
         //else
-        //green goes first 
-
-    //}//end method determindFirst Team
+        else
+        {
+            //green team goes first 
+            return bol_green;
+        }//end else (green team goes first)
+        
+    }//end method determindFirst Team
 
     //ValudateSelectedPieceForMovement is called when the player is selecting the piece that they want to move
     public void ValidateSelectedPieceForMovement()
@@ -207,4 +244,25 @@ public class GameManager : MonoBehaviour
             int_tile++;
         }//end the for each tile in the list loop
     }//end method place pieces
+
+    //Roll Dice Method this is called when determining who goes first and on every attack
+    void RollDice(int int_LandingSide, Material material_teamColor)
+    {
+        //generate a dice on the board 
+        if(material_teamColor == material_blueDice)
+        {
+            //generate a blue dice
+
+        }//end if blue
+        else
+        {
+            //generate a green dice
+
+        }//end if green
+
+        //Roll the dice 
+
+        //make it land on the corect side.
+
+    }//end of roll dice method
 }//end class

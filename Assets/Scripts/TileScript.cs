@@ -16,7 +16,7 @@ public class TileScript : MonoBehaviour
     {
         //get the game manager
         script_GameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
-    }
+    }//end of start method
 
     //OnMouseDown is called when a button on the mouse is clicked
     private void OnMouseDown()
@@ -30,5 +30,5 @@ public class TileScript : MonoBehaviour
 
         //debug
         Debug.Log("Tile Clicked: " + gameObject);
-    }
-}
+    }//end on on mouse down method
+}//end of class tile script
