@@ -21,39 +21,11 @@ public class TileScript : MonoBehaviour
     //OnMouseDown is called when a button on the mouse is clicked
     private void OnMouseDown()
     {
-        //varaibales 
-       
-       
-        //Select the tile and validate it.
-
         //set the selected tile 
-        script_GameManager.tile_selected = script_GameManager.array_boardTiles[int_index];
-        //check if there is a piece there for the player to move
-        script_GameManager.ValidateSelectedPieceForMovement();
+        //script_GameManager.tile_selected = script_GameManager.array_boardTiles[int_index];
+        Debug.Log("Tile Selected: " + int_index);
+        script_GameManager.ProcessSelection(int_index);
        
-        if(!script_GameManager.ValidateSelectedPieceForMovement())
-        {
-            Debug.Log("selecting piece");
-            script_GameManager.ValidateSelectedPieceForMovement();
-
-            
-        }
-        else if (script_GameManager.ValidateSelectedPieceForMovement())
-        {
-            Debug.Log("Selecting Movement");
-            script_GameManager.ValidateSelectedTileForMovement();
-        }
-        
-
-
-        //debug
-        Debug.Log("Tile Clicked: " + gameObject + "got here");
     }//end on on mouse down method
 
-     bool ProcessMovement()
-    {
-        bool bol_selected = script_GameManager.ValidateSelectedPieceForMovement();
-        return bol_selected;
-
-    }//finish menthod
 }//end of class tile script
