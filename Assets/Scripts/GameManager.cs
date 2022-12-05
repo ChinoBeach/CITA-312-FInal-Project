@@ -28,7 +28,10 @@ public class GameManager : MonoBehaviour
     int int_GreenRemaining = int_StartingTeamSize;    //how many green pieces are currently on the board
     int int_BlueRemaining = int_StartingTeamSize;     //how many blue pieces are currently on the board
 
-    public GameObject tile_selected;                  //any tile that gets selected
+    public GameObject tile_selected;                             //any tile that gets selected
+    static int int_invalidIndex = 100;                           //if its not valid for selection
+    int int_pieceSelectedTileIndex = int_invalidIndex;           //where the the selected piece for movement was 
+    bool bol_canMove = false;                                    //if the piece can move
 
     // Change this to whoever starts First
     private bool bol_isBlueTurn = true;                    //this determines whoevers turn it is. If its not blues turn, it is greens
@@ -129,8 +132,10 @@ public class GameManager : MonoBehaviour
     }//end method determindFirst Team
 
     //ValudateSelectedPieceForMovement is called when the player is selecting the piece that they want to move
-    public void ValidateSelectedPieceForMovement()
+    public bool ValidateSelectedPieceForMovement()
     {
+        //variables
+        bool bol_isSelected = false;
 
         //access the tiles information(stored in script)
         TileScript script_tile = tile_selected.GetComponent<TileScript>();
@@ -139,17 +144,66 @@ public class GameManager : MonoBehaviour
         if(!script_tile.bol_piecePlacedHere)
         {
             //no "piece" was selected to move
+            bol_isSelected = false;
             tile_selected = null;
-
-            // When the tile is valid, set a bool to be able to move
-            // then when that variable is set, if its within range and move there
-            // eg: check if the tile meets all criteria for the movements
-
-            // When you move, check !hasPiece to be valid movement
+            int_pieceSelectedTileIndex = int_invalidIndex;
         }//end if statement for does not have piece
+        else
+        {
+            //check to see which team it is 
+            if(bol_isBlueTurn)
+            {
+                //if the piece is blue
+                if(script_tile.bol_isBlueteam)
+                {
+                    int_pieceSelectedTileIndex = script_tile.int_index;
+                }//end blue turn blue piece
+                else
+                {
+                    //still invalid piece
+                    bol_isSelected = false;
+                    tile_selected = null;
+                    int_pieceSelectedTileIndex = int_invalidIndex;
+                }//end blue turn green piece
+            }//end if blue teams turn
+            //its the geen teams turn
+            else
+            {
+                //if its a blue piece
+                if(script_tile.bol_isBlueteam)
+                {
+                    //piece is invalid
+                    bol_isSelected = false;
+                    tile_selected = null;
+                    int_pieceSelectedTileIndex = int_invalidIndex;
+                }//end green turn blue piece
+                else
+                {
+                    //its a green piece
+                    int_pieceSelectedTileIndex = script_tile.int_index;
+
+                }//end green turn green piece
+            }//end else green teams turn
+            
+            //if a piece was selected
+            if(tile_selected !=null && int_pieceSelectedTileIndex != int_invalidIndex)
+            {
+               //remove the tile
+               script_tile.bol_piecePlacedHere = false;
+               //set  movable
+               bol_canMove = true;
+
+                //return that one was selected 
+                bol_isSelected = true; 
+            }//end if not equal to null.
+        }//end else there was a piece
         
         //debug
-        Debug.Log("Selected Tile:" + tile_selected);
+        Debug.Log("Selected Piece:" + tile_selected);
+        Debug.Log("Selected Piece Index: "+int_pieceSelectedTileIndex);
+        Debug.Log("Selected Piece Can Move: " + bol_canMove);
+
+        return bol_isSelected;
     }//end method for validating movement selection
 
     //ValudateSelectedTileForMovement is called when the player is selecting the tile that they want to move to
@@ -158,19 +212,45 @@ public class GameManager : MonoBehaviour
 
         //access the tiles information(stored in script)
         TileScript script_tile = tile_selected.GetComponent<TileScript>();
-
+        Debug.Log(script_tile.int_index);
         // If the there is no piece on the tile, Tile is valid (can move a piece to this tile) 
         if (!script_tile.bol_piecePlacedHere)
         {
-            //no "piece" was selected to move
-            tile_selected = null;
+            //this is is part of a valid move
+            //if its within range
+            if(
+                script_tile.int_index == int_pieceSelectedTileIndex + upLeft ||
+                script_tile.int_index == int_pieceSelectedTileIndex + up ||
+                script_tile.int_index == int_pieceSelectedTileIndex + upRight ||
+                script_tile.int_index == int_pieceSelectedTileIndex + left ||
+                script_tile.int_index == int_pieceSelectedTileIndex + right ||
+                script_tile.int_index == int_pieceSelectedTileIndex + downLeft ||
+                script_tile.int_index == int_pieceSelectedTileIndex + down ||
+                script_tile.int_index == int_pieceSelectedTileIndex + downRight
+               )
+            {
+                // move there by setting this tile to have a piece on it
+                script_tile.bol_piecePlacedHere = true;
+                //set the piece to the correct color
+                if(bol_isBlueTurn)
+                {
+                    script_tile.bol_piecePlacedHere = true;
+                    Debug.Log("got here");
+                }//end if blue team turn
 
-            // When the tile is valid, set a bool to be able to move
-            // then when that variable is set, if its within range and move there
-            // eg: check if the tile meets all criteria for the movements
+                //set can move to false
+                bol_canMove = false;
 
-            // When you move, check !hasPiece to be valid movement
+            }   //end if in range
+
+
         }//end if statement for does not have piece
+        else
+        {
+            //invalid move
+            tile_selected = null;
+            
+        }//end for if it does have a piece
 
         //debug
         Debug.Log("Selected Tile:" + tile_selected);
